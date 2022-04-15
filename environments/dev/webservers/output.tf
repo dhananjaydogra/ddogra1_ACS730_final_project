@@ -8,6 +8,6 @@ output "bastion_sg" {
   value = aws_security_group.bastion_sg.id
 }
 
-output "nonprod_VM_ips" {
-  value = aws_instance.nonprod_VM[*].private_ip
+output "dev_VM_ips" {
+  value = aws_instance.Group27_Dev_VM[*].private_ip
 }

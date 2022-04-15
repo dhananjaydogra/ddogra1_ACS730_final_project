@@ -30,3 +30,6 @@ override.tf.json
 
 #Ignore the ssh keys 
 sshkey_*
+
+#Ignore .terraform files
+.terraform*
