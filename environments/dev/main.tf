@@ -1,7 +1,7 @@
 
 # Retrieve global variables from the Terraform module
 module "globalvars" {
-  source = "../../../modules/globalvars"
+  source = "../../modules/globalvars"
 }
 
 
@@ -23,7 +23,7 @@ locals {
 
 # Module to deploy basic networking 
 module "vpc-dev" {
-  source              = "../../../modules/aws_network"
+  source              = "../../modules/aws_network"
   env                 = var.env
   vpc_cidr            = var.vpc_cidr
   public_cidr_blocks  = var.public_subnet_cidrs
@@ -36,7 +36,7 @@ module "vpc-dev" {
 # Using Module to create Security Group for LoadBalancer
 
 module "SecurityGroup-LB-dev" {
-  source       = "../../../modules/security_groups"
+  source       = "../../modules/security_groups"
   env          = var.env
   type         = "LB"
   vpc_id       = local.vpc_id
@@ -48,7 +48,7 @@ module "SecurityGroup-LB-dev" {
 
 #### Module of  LoadBalancer
 module "LB-dev" {
-  source            = "../../../modules/load_balancer"
+  source            = "../../modules/load_balancer"
   env               = var.env
   public_subnet_ids = local.public_subnet_ids
   security_group_id = module.SecurityGroup-LB-dev.LB_SG_id
@@ -62,12 +62,12 @@ module "LB-dev" {
 # Using Module to create Security Group for EC2 instances
 
 module "SecurityGroup-EC2-dev" {
-  source       = "../../../modules/security_groups"
+  source       = "../../modules/security_groups"
   env          = var.env
   type         = "EC2"
   vpc_id       = local.vpc_id
-  ingress_cidr = [var.vpc_cidr, "${local.myip}/32"]
-  egress_cidr  = [var.vpc_cidr, "${local.myip}/32"]
+  ingress_cidr = [var.vpc_cidr, "${local.myip}/32","0.0.0.0/0"]
+  egress_cidr  = [var.vpc_cidr, "${local.myip}/32","0.0.0.0/0"]
   prefix       = var.prefix
   default_tags = var.default_tags
 }
@@ -77,7 +77,12 @@ module "SecurityGroup-EC2-dev" {
 # Adding SSH key to Amazon EC2 and bastion
 resource "aws_key_pair" "web_key" {
   key_name   = local.name_prefix
-  public_key = file("${path.module}/../webservers/${local.keyName}.pub")
+  public_key = file("${path.module}/${local.keyName}.pub")
+}
+
+#Fecthing an exisitng_profile of instance porfile name from list where s3 read policy has been manually added
+data "aws_iam_instance_profile" "exisitng_profile" {
+  name = "EMR_EC2_DefaultRole"
 }
 
 # Data source for AMI id to be passed into the module
@@ -93,11 +98,12 @@ data "aws_ami" "latest_amazon_linux" {
 ### using  Module Launch Configuration 
 
 module "LaunchConfig-dev" {
-  source            = "../../../modules/launch_configuration"
+  source            = "../../modules/launch_configuration"
   env               = var.env
   security_group_id = module.SecurityGroup-EC2-dev.EC2_SG_id
   key_name          = aws_key_pair.web_key.key_name
   ami_id            = data.aws_ami.latest_amazon_linux.id
+  iam_ins_profile           = data.aws_iam_instance_profile.exisitng_profile.name
   instance_type     = lookup(var.instance_type, var.env)
   prefix            = var.prefix
   default_tags      = var.default_tags
@@ -107,7 +113,7 @@ module "LaunchConfig-dev" {
 #####Module ASG
 
 module "ASG-dev" {
-  source               = "../../../modules/auto_scaling_group"
+  source               = "../../modules/auto_scaling_group"
   env                  = var.env
   min_size             = lookup(var.min_size, var.env)
   desired_capacity     = lookup(var.desired_capacity, var.env)
@@ -128,11 +134,11 @@ module "ASG-dev" {
 
 # Security Group for bastion
 module "SecurityGroup-Bastion-dev" {
-  source       = "../../../modules/security_groups"
+  source       = "../../modules/security_groups"
   env          = var.env
   type         = "Bastion"
   vpc_id       = local.vpc_id
-  ingress_cidr = [var.vpc_cidr, "${local.private_cloud9_ip}/32", "${local.public_cloud9_ip}/32"]
+  ingress_cidr = [var.vpc_cidr, "${local.private_cloud9_ip}/32", "${local.public_cloud9_ip}/32","0.0.0.0/0"]
   egress_cidr  = [var.vpc_cidr, "${local.private_cloud9_ip}/32", "${local.public_cloud9_ip}/32"]
   prefix       = var.prefix
   default_tags = var.default_tags
