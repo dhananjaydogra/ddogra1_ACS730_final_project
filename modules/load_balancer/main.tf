@@ -20,6 +20,7 @@ locals {
 ### Module to Create a AWS Load Balancer
 
 resource "aws_elb" "Group27_Project_LB" {
+  name = "${local.name_prefix}-LoadBalancer"
   security_groups           =  var.security_group_id
   subnets                   =  var.public_subnet_ids
   cross_zone_load_balancing = true

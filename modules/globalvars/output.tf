@@ -24,4 +24,5 @@ output "private_cloud9_ip" {
 
 output "public_cloud9_ip" {
   value     = "44.195.78.249"
+}
 
