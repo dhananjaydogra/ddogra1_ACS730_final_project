@@ -45,6 +45,9 @@ resource "aws_launch_configuration" "Group27_Project_webserver" {
       app  = lookup(var.default_tags, "App")
     }
   )
+  metadata_options {
+     http_tokens = "required"
+     }  
    root_block_device {
     encrypted = true
   }

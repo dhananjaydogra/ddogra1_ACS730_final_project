@@ -13,6 +13,7 @@ locals {
 resource "aws_security_group" "Group27_Project_LB_SG" {
   count= var.type== "LB" ? 1 : 0
   vpc_id      = var.vpc_id
+  description = "Security Group for ${var.env} LoadBalancer"
   # Inbound Rules
   # HTTP access from specific cidrs
   ingress {
@@ -45,6 +46,7 @@ resource "aws_security_group" "Group27_Project_LB_SG" {
 
 resource "aws_security_group" "Group27_Project_EC2_SG" {
   count= var.type== "EC2" ? 1 : 0
+  description = "Security Group for ${var.env} EC2 "
   vpc_id      = var.vpc_id
   # Inbound Rules
   # HTTP access from specific cidrs
@@ -85,6 +87,7 @@ resource "aws_security_group" "Group27_Project_EC2_SG" {
 
 resource "aws_security_group" "Group27_Project_Bastion_SG" {
   count= var.type== "Bastion" ? 1 : 0
+  description = "Security Group for ${var.env} Bastion"
   vpc_id      = var.vpc_id
   # Inbound Rules
   # SSH access from specific cidrs
