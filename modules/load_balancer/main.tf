@@ -25,8 +25,6 @@ resource "aws_lb" "Group27_Project_LB" {
   subnets                   =  var.public_subnet_ids
   load_balancer_type        = "application"
   internal                  = false
-  drop_invalid_header_fields = true
-  enable_deletion_protection = true
    tags = merge(
     local.default_tags, {
       Name = "${local.name_prefix}-LoadBalancer"
