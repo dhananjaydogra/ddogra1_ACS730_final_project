@@ -34,7 +34,7 @@ variable "instance_type" {
 # Minimum Size for the auto scaling group based on environment
 variable "min_size" {
   default = {
-    "Prod"    = "2"
+    "Prod"    = "1"
     "Staging" = "1"
     "Dev"     = "1"
   }
