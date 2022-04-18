@@ -7,9 +7,9 @@ output "default_tags" {
   }
 }
 
-# Prefix to identify resources
+# Prefix to identify the Group For the Project
 output "prefix" {
-  value     = "Group27"
+  value     = "Group9"
 }
 
 # Your system's IP Address
