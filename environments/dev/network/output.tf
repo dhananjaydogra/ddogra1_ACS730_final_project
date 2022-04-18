@@ -1,16 +1,4 @@
-output "public_subnet_ids" {
-  value = module.vpc-nonprod.public_subnet_ids
-}
 
-output "private_subnet_ids" {
-  value = module.vpc-nonprod.private_subnet_ids
+output "Dev_DNS_Name" {
+  value = module.LB-dev.LB_DNS_Name
 }
-
-output "vpc_id" {
-  value = module.vpc-nonprod.vpc_id
-}
-
-output "public_route_table_id" {
-  value = module.vpc-nonprod.public_route_table_id
-}
-

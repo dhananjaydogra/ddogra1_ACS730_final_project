@@ -44,3 +44,48 @@ variable "env" {
   description = "Deployment Environment"
 }
 
+# Instance type fir the LaunchConfig based on environment
+variable "instance_type" {
+  default = {
+    "prod"    = "t3.medium"
+    "staging" = "t3.small"
+    "dev"     = "t3.micro"
+  }
+  description = "Type of the instance"
+  type        = map(string)
+}
+
+
+
+# Minimum Size for the auto scaling group based on environment
+variable "min_size" {
+  default = {
+    "prod"    = "1"
+    "staging" = "1"
+    "dev"     = "1"
+  }
+  description = "Minimum Size for the auto scaling group"
+  type        = map(string)
+}
+
+# MMaximum Size for the auto scaling group based on environment
+variable "desired_capacity" {
+  default = {
+    "prod"    = "3"
+    "staging" = "3"
+    "dev"     = "2"
+  }
+  description = "Desired Capaicty for the auto scaling group"
+  type        = map(string)
+}
+
+# Maximum Size for the auto scaling group based on environment
+variable "max_size" {
+  default = {
+    "prod"    = "4"
+    "staging" = "4"
+    "dev"     = "4"
+  }
+  description = "Maximum Size for the auto scaling group"
+  type        = map(string)
+}

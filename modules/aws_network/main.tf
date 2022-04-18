@@ -32,7 +32,7 @@ resource "aws_vpc" "main" {
 
 # Add provisioning of the public subnetin the default VPC
 resource "aws_subnet" "public_subnet" {
-   count            = var.env == "prod" ? 0 : length(var.public_cidr_blocks)
+  count            =  length(var.public_cidr_blocks)
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.public_cidr_blocks[count.index]
   availability_zone = data.aws_availability_zones.available.names[count.index+1]
@@ -45,11 +45,9 @@ resource "aws_subnet" "public_subnet" {
 
 
 
-
-
 # Create Internet Gateway
 resource "aws_internet_gateway" "igw" {
-  count  = var.env == "prod" ? 0 : 1
+  count  = 1
   vpc_id = aws_vpc.main.id
 
   tags = merge(local.default_tags,
@@ -61,7 +59,7 @@ resource "aws_internet_gateway" "igw" {
 
 # Route table to route add default gateway pointing to Internet Gateway (IGW)
 resource "aws_route_table" "public_route_table" {
-  count  = var.env == "prod" ? 0 : 1
+  count  = 1
   vpc_id = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
@@ -74,12 +72,10 @@ resource "aws_route_table" "public_route_table" {
 
 # Associate subnets with the custom route table
 resource "aws_route_table_association" "public_route_table_association" {
-  count          = var.env == "prod" ? 0 : length(aws_subnet.public_subnet[*].id)
+  count          = length(aws_subnet.public_subnet[*].id)
   route_table_id = aws_route_table.public_route_table[0].id
   subnet_id      = aws_subnet.public_subnet[count.index].id
 }
-
-
 
 
 
@@ -97,9 +93,9 @@ resource "aws_subnet" "private_subnet" {
 }
 
 
-# #Adding EIP
+#Adding EIP
 resource "aws_eip" "nat_eip" {
-count= var.env == "prod" ? 0 : 1
+count= 1
 vpc=true
 tags = merge(
     local.default_tags, {
@@ -113,9 +109,9 @@ tags = merge(
 #Adding a NAT gateway to Public subnet in nonprod
 
 resource "aws_nat_gateway" "nat_gw" {
- count= var.env == "prod" ? 0 : 1
+ count=  1
   allocation_id=aws_eip.nat_eip[count.index].id
-  subnet_id=aws_subnet.public_subnet[0].id
+  subnet_id=aws_subnet.public_subnet[1].id
   
   tags = merge(
     local.default_tags, {
@@ -126,9 +122,9 @@ resource "aws_nat_gateway" "nat_gw" {
 }
 
 
-# Private Route table to route from nonprod NAT Gateway
+# Private Route table to route from  NAT Gateway
 resource "aws_route_table" "private_route_table" {
- count= var.env == "prod" ? 0 : 1
+ count= 1
   vpc_id = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
@@ -141,26 +137,26 @@ resource "aws_route_table" "private_route_table" {
 
 # Associate subnets with the private route table
 resource "aws_route_table_association" "private_route_table_association" {
-  count          = var.env == "prod" ? 0 : length(aws_subnet.private_subnet[*].id)
+  count          = length(aws_subnet.private_subnet[*].id)
   route_table_id = aws_route_table.private_route_table[0].id
   subnet_id      = aws_subnet.private_subnet[count.index].id
 }
 
 
 
-# Private Route table to route from prod 
-resource "aws_route_table" "prod_private_route_table" {
-count= var.env == "prod" ? 1 : 0
-  vpc_id = aws_vpc.main.id
-  route = []
-  tags = {
-    Name = "${local.name_prefix}-private-route_table"
-  }
-}
+# # Private Route table to route from prod 
+# resource "aws_route_table" "prod_private_route_table" {
+# count= var.env == "prod" ? 1 : 0
+#   vpc_id = aws_vpc.main.id
+#   route = []
+#   tags = {
+#     Name = "${local.name_prefix}-private-route_table"
+#   }
+# }
 
-# Associate subnets with the private route table
-resource "aws_route_table_association" "prod_private_route_table_association" {
-  count          = var.env == "prod" ? length(aws_subnet.private_subnet[*].id) : 0
-  route_table_id = aws_route_table.prod_private_route_table[0].id
-  subnet_id      = aws_subnet.private_subnet[count.index].id
-}
+# # Associate subnets with the private route table
+# resource "aws_route_table_association" "prod_private_route_table_association" {
+#   count          = var.env == "prod" ? length(aws_subnet.private_subnet[*].id) : 0
+#   route_table_id = aws_route_table.prod_private_route_table[0].id
+#   subnet_id      = aws_subnet.private_subnet[count.index].id
+# }

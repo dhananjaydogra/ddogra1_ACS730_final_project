@@ -15,3 +15,13 @@ output "prefix" {
 output "my_ip" {
   value     = "76.67.96.119"
 }
+
+#Cloud9 IP Address
+output "private_cloud9_ip" {
+  value     = "172.31.10.170"
+}
+
+output "public_cloud9_ip" {
+  value     = "33.235.133.48"
+}
+
