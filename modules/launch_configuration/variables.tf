@@ -43,7 +43,7 @@ variable "security_group_id" {
 
 # Variable to signal the current environment 
 variable "env" {
-  default     = "dev"
+  default     = "Dev"
   type        = string
   description = "Deployment Environment"
 }

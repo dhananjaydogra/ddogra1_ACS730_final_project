@@ -38,8 +38,11 @@ resource "aws_launch_configuration" "Group27_Project_webserver" {
   iam_instance_profile        = var.iam_ins_profile
   user_data = templatefile("${path.module}/install_httpd.sh.tpl",
     {
-      env    = upper(var.env),
-      prefix = upper(local.name_prefix)
+      env    = lower(var.env),
+      prefix = local.name_prefix
+      owner  = lookup(var.default_tags, "Owner")
+      studentId  = lookup(var.default_tags, "StudentId")
+      app  = lookup(var.default_tags, "App")
     }
   )
    root_block_device {

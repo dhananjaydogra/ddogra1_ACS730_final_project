@@ -19,12 +19,19 @@ variable "private_subnet_cidrs" {
 }
 
 
-
 # Variable to signal the current environment 
 variable "env" {
-  default     = "dev"
+  default     = "Dev"
   type        = string
   description = "Deployment Environment"
+}
+
+
+# Instance Profile Name for the LaunchConfig 
+variable "iam_instance_profile_name" {
+  default     = "EMR_EC2_DefaultRole"
+  type        = string
+  description = "Instance Profile Name for the LaunchConfig. It  needs to be created and updated in case this is not present"
 }
 
 # Instance type fir the LaunchConfig based on environment
@@ -32,20 +39,18 @@ variable "instance_type" {
   default = {
     "prod"    = "t3.medium"
     "staging" = "t3.small"
-    "dev"     = "t3.micro"
+    "Dev"     = "t3.micro"
   }
   description = "Type of the instance"
   type        = map(string)
 }
-
-
 
 # Minimum Size for the auto scaling group based on environment
 variable "min_size" {
   default = {
     "prod"    = "1"
     "staging" = "1"
-    "dev"     = "1"
+    "Dev"     = "1"
   }
   description = "Minimum Size for the auto scaling group"
   type        = map(string)
@@ -56,7 +61,7 @@ variable "desired_capacity" {
   default = {
     "prod"    = "3"
     "staging" = "3"
-    "dev"     = "2"
+    "Dev"     = "2"
   }
   description = "Desired Capaicty for the auto scaling group"
   type        = map(string)
@@ -67,25 +72,29 @@ variable "max_size" {
   default = {
     "prod"    = "4"
     "staging" = "4"
-    "dev"     = "4"
+    "Dev"     = "4"
   }
   description = "Maximum Size for the auto scaling group"
   type        = map(string)
 }
 
-# Default tags
-variable "default_tags" {
-  default = {
-    "Owner" = "Dhananjay",
-    "App"   = "ACS730-Project"
-  }
-  type        = map(any)
-  description = "Default tags to be appliad to all AWS resources"
-}
+# Maximum Size for the auto scaling group based on environment
 
-# Name prefix
-variable "prefix" {
-  type        = string
-  default     = "Group27"
-  description = "Name prefix"
-}
+
+# # Default tags
+# variable "default_tags" {
+#   default = {
+#     "Owner" = "Dhananjay",
+#     "App"   = "ACS730-Project"
+#     "StduentID"="ddogra1"
+#   }
+#   type        = map(any)
+#   description = "Default tags to be appliad to all AWS resources"
+# }
+
+# # Name prefix
+# variable "prefix" {
+#   type        = string
+#   default     = "Group27"
+#   description = "Name prefix"
+# }

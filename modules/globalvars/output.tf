@@ -3,6 +3,7 @@ output "default_tags" {
   value = {
     "Owner" = "Dhananjay"
     "App"   = "ACS730-Project"
+    "StudentId"="ddogra1"
   }
 }
 
