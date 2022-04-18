@@ -1,42 +1,44 @@
 
 # Retrieve global variables from the Terraform module
 module "globalvars" {
-  source = "../../modules/globalvars"
+  source = "../../../modules/globalvars"
 }
+
 
 
 # Defining the tags  and variables locally using the modules
 locals {
   default_tags      = merge(module.globalvars.default_tags, { "env" = var.env })
   prefix            = module.globalvars.prefix
+  l_env             = lower(var.env)
   myip              = module.globalvars.my_ip
   name_prefix       = "${local.prefix}-${var.env}"
   keyName           = "sshkey_${var.env}"
-  vpc_id            = module.vpc-Staging.vpc_id
-  public_subnet_ids = module.vpc-Staging.public_subnet_ids
   private_cloud9_ip = module.globalvars.private_cloud9_ip
   public_cloud9_ip  = module.globalvars.public_cloud9_ip
-
+  vpc_id             = data.terraform_remote_state.StagingNetwork.outputs.Staging_Vpc_Id
+  public_subnet_ids  = data.terraform_remote_state.StagingNetwork.outputs.Staging_Public_Subnet_Ids
+  private_subnet_ids = data.terraform_remote_state.StagingNetwork.outputs.Staging_Private_Subnet_Ids
 }
 
 
-
-# Module to deploy basic networking 
-module "vpc-Staging" {
-  source              = "../../modules/aws_network"
-  env                 = var.env
-  vpc_cidr            = var.vpc_cidr
-  public_cidr_blocks  = var.public_subnet_cidrs
-  private_cidr_blocks = var.private_subnet_cidrs
-  prefix              = local.prefix
-  default_tags        = local.default_tags
+#Getting netowrk details from the TF state  environment states 
+data "terraform_remote_state" "StagingNetwork" { // This is to use Outputs from Remote State
+  backend = "s3"
+  config = {
+    bucket = "ddogra1-acs730-project-${local.l_env}"  // Bucket from where to GET Terraform State
+    key    = "${local.l_env}-network/terraform.tfstate" // Object name in the bucket to GET Terraform State
+    region = "us-east-1"                              // Region where bucket created
+  }
 }
+
+
 
 
 # Using Module to create Security Group for LoadBalancer
 
 module "SecurityGroup-LB-Staging" {
-  source       = "../../modules/security_groups"
+  source       = "../../../modules/security_groups"
   env          = var.env
   type         = "LB"
   vpc_id       = local.vpc_id
@@ -46,12 +48,25 @@ module "SecurityGroup-LB-Staging" {
   default_tags = local.default_tags
 }
 
+# Using Module to create a TargetGroup
+
+module "TargetGroup-Staging" {
+  source       = "../../../modules/target_group"
+  env          = var.env
+  vpc_id       = local.vpc_id
+  prefix       = local.prefix
+  default_tags = local.default_tags
+}
+
+
+
 #### Module of  LoadBalancer
 module "LB-Staging" {
-  source            = "../../modules/load_balancer"
+  source            = "../../../modules/load_balancer"
   env               = var.env
   public_subnet_ids = local.public_subnet_ids
   security_group_id = module.SecurityGroup-LB-Staging.LB_SG_id
+  target_Grp_Arn    = module.TargetGroup-Staging.TG_ARN
   prefix            = local.prefix
   default_tags      = local.default_tags
 }
@@ -62,7 +77,7 @@ module "LB-Staging" {
 # Using Module to create Security Group for EC2 instances
 
 module "SecurityGroup-EC2-Staging" {
-  source       = "../../modules/security_groups"
+  source       = "../../../modules/security_groups"
   env          = var.env
   type         = "EC2"
   vpc_id       = local.vpc_id
@@ -98,7 +113,7 @@ data "aws_ami" "latest_amazon_linux" {
 ### using  Module Launch Configuration 
 
 module "LaunchConfig-Staging" {
-  source            = "../../modules/launch_configuration"
+  source            = "../../../modules/launch_configuration"
   env               = var.env
   security_group_id = module.SecurityGroup-EC2-Staging.EC2_SG_id
   key_name          = aws_key_pair.web_key.key_name
@@ -113,14 +128,14 @@ module "LaunchConfig-Staging" {
 #####Module ASG
 
 module "ASG-Staging" {
-  source               = "../../modules/auto_scaling_group"
+  source               = "../../../modules/auto_scaling_group"
   env                  = var.env
   min_size             = lookup(var.min_size, var.env)
   desired_capacity     = lookup(var.desired_capacity, var.env)
   max_size             = lookup(var.max_size, var.env)
-  Lb_ids               = [module.LB-Staging.LB_id]
-  private_subnet_ids   = module.vpc-Staging.private_subnet_ids
+  private_subnet_ids   = local.private_subnet_ids
   LC_namne             = module.LaunchConfig-Staging.LC_Name
+  target_group_arn     = module.TargetGroup-Staging.TG_ARN
   scale_down_threshold = 5
   scale_up_threshold   = 10
   prefix               = local.prefix
@@ -130,11 +145,11 @@ module "ASG-Staging" {
 
 
 
-# Creating a bastion host that provides access to all VMs in prod and nonprod
+####Creating a bastion host that provides access to private vm of this environment
 
 # Security Group for bastion
 module "SecurityGroup-Bastion-Staging" {
-  source       = "../../modules/security_groups"
+  source       = "../../../modules/security_groups"
   env          = var.env
   type         = "Bastion"
   vpc_id       = local.vpc_id
@@ -150,7 +165,7 @@ resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.latest_amazon_linux.id
   instance_type               = lookup(var.instance_type, var.env)
   key_name                    = aws_key_pair.web_key.key_name
-  subnet_id                   = module.vpc-Staging.public_subnet_ids[0]
+  subnet_id                   = local.public_subnet_ids[0]
   security_groups             = module.SecurityGroup-Bastion-Staging.BS_SG_id
   associate_public_ip_address = true
   ebs_optimized               = true
@@ -173,3 +188,4 @@ resource "aws_instance" "bastion" {
     }
   )
 }
+

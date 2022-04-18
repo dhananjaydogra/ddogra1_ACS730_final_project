@@ -12,7 +12,7 @@ locals {
 
 # Target Group 
 resource "aws_lb_target_group" "Group27_Project_tg" {
-  name        = "Group27ProjectTG"
+  name        = "${local.name_prefix}-TargetGroup"
   port        = 80
   target_type = "instance"
   protocol    = "HTTP"
