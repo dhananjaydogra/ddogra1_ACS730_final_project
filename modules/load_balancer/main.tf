@@ -19,7 +19,7 @@ locals {
 
 ### Module to Create a AWS Load Balancer 
 
-resource "aws_lb" "Group27_Project_LB" {
+resource "aws_lb" "Group9_Project_LB" {
   name                      = "${local.name_prefix}-LoadBalancer"
   security_groups           =  var.security_group_id
   subnets                   =  var.public_subnet_ids
@@ -33,8 +33,8 @@ resource "aws_lb" "Group27_Project_LB" {
 }
 
 # Adding the LB Listenr 
-resource "aws_lb_listener" "Group27_Project_LB_Listener" {
-  load_balancer_arn = aws_lb.Group27_Project_LB.arn
+resource "aws_lb_listener" "Group9_Project_LB_Listener" {
+  load_balancer_arn = aws_lb.Group9_Project_LB.arn
   port              = "80"
   protocol          = "HTTP"
 
@@ -46,7 +46,7 @@ resource "aws_lb_listener" "Group27_Project_LB_Listener" {
 }
  tags = merge(
     local.default_tags, {
-      Name = "${local.name_prefix}-LoadBalancer"
+      Name = "${local.name_prefix}-LB_Listenerr"
     }
   )
 }

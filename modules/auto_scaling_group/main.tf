@@ -23,7 +23,7 @@ locals {
   
   ##### Step 10:- Create AWS Auto Scaling Group
 
-resource "aws_autoscaling_group" "Group27_Project_ASG" {
+resource "aws_autoscaling_group" "Group9_Project_ASG" {
   name_prefix      = "${local.name_prefix}-ASG-"
   min_size         =  var.min_size
   desired_capacity =  var.desired_capacity
@@ -55,17 +55,17 @@ tag {
 
 ###AWS Auto Scaling Policy
 
-resource "aws_autoscaling_policy" "Group27_Project_ASG_ScaleUp_Policy" {
-  name                   = "Group27_Project_ASG_ScaleUp_Policy"
+resource "aws_autoscaling_policy" "Group9_Project_ASG_ScaleUp_Policy" {
+  name                   = "${local.name_prefix}-ASG_ScaleUp_Policy"
   scaling_adjustment     = 1
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
-  autoscaling_group_name = aws_autoscaling_group.Group27_Project_ASG.name
+  autoscaling_group_name = aws_autoscaling_group.Group9_Project_ASG.name
 }
 
 
-resource "aws_cloudwatch_metric_alarm" "Group27_Project_ASG_ScaleUpAlarm" {
-  alarm_name          = "Group27_Project_ASG_ScaleUpAlarm"
+resource "aws_cloudwatch_metric_alarm" "Group9_Project_ASG_ScaleUpAlarm" {
+  alarm_name          = "${local.name_prefix}-ASG_ScaleUpAlarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"
@@ -74,24 +74,24 @@ resource "aws_cloudwatch_metric_alarm" "Group27_Project_ASG_ScaleUpAlarm" {
   statistic           = "Average"
   threshold           = var.scale_up_threshold
   dimensions = {
-    AutoScalingGroupName = "${aws_autoscaling_group.Group27_Project_ASG.name}"
+    AutoScalingGroupName = "${aws_autoscaling_group.Group9_Project_ASG.name}"
   }
   alarm_description = "This metric monitor EC2 instance CPU utilization"
-  alarm_actions     = ["${aws_autoscaling_policy.Group27_Project_ASG_ScaleUp_Policy.arn}"]
+  alarm_actions     = ["${aws_autoscaling_policy.Group9_Project_ASG_ScaleUp_Policy.arn}"]
 }
 
 
-resource "aws_autoscaling_policy" "Group27_Project_ASG_ScaleDown_Policy" {
-  name                   = "Group27_Project_ASG_ScaleDown_Policy"
+resource "aws_autoscaling_policy" "Group9_Project_ASG_ScaleDown_Policy" {
+  name                   = "${local.name_prefix}-ASG_ScaleDown_Policy"
   scaling_adjustment     = -1
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
-  autoscaling_group_name = aws_autoscaling_group.Group27_Project_ASG.name
+  autoscaling_group_name = aws_autoscaling_group.Group9_Project_ASG.name
 }
 
 
-resource "aws_cloudwatch_metric_alarm" "Group27_Project_ASG_ScaleDownAlarm" {
-  alarm_name          = "Group27_Project_ASG_ScaleDownAlarm"
+resource "aws_cloudwatch_metric_alarm" "Group9_Project_ASG_ScaleDownAlarm" {
+  alarm_name          = "${local.name_prefix}-ASG_ScaleDownAlarm"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"
@@ -100,8 +100,8 @@ resource "aws_cloudwatch_metric_alarm" "Group27_Project_ASG_ScaleDownAlarm" {
   statistic           = "Average"
   threshold           = var.scale_down_threshold
   dimensions = {
-    AutoScalingGroupName = "${aws_autoscaling_group.Group27_Project_ASG.name}"
+    AutoScalingGroupName = "${aws_autoscaling_group.Group9_Project_ASG.name}"
   }
   alarm_description = "This metric monitor EC2 instance CPU utilization"
-  alarm_actions     = ["${aws_autoscaling_policy.Group27_Project_ASG_ScaleDown_Policy.arn}"]
+  alarm_actions     = ["${aws_autoscaling_policy.Group9_Project_ASG_ScaleDown_Policy.arn}"]
 }

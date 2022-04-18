@@ -10,7 +10,7 @@ locals {
 
 ### Module to Create a Security Group for LoadBalancer
 
-resource "aws_security_group" "Group27_Project_LB_SG" {
+resource "aws_security_group" "Group9_Project_LB_SG" {
   count= var.type== "LB" ? 1 : 0
   vpc_id      = var.vpc_id
   description = "Security Group for ${var.env} LoadBalancer"
@@ -44,7 +44,7 @@ resource "aws_security_group" "Group27_Project_LB_SG" {
 
 ### Module to Create a Security Group for Ec2 
 
-resource "aws_security_group" "Group27_Project_EC2_SG" {
+resource "aws_security_group" "Group9_Project_EC2_SG" {
   count= var.type== "EC2" ? 1 : 0
   description = "Security Group for ${var.env} EC2 "
   vpc_id      = var.vpc_id
@@ -85,7 +85,7 @@ resource "aws_security_group" "Group27_Project_EC2_SG" {
 
 ### Module to Create a Security Group for Bastion
 
-resource "aws_security_group" "Group27_Project_Bastion_SG" {
+resource "aws_security_group" "Group9_Project_Bastion_SG" {
   count= var.type== "Bastion" ? 1 : 0
   description = "Security Group for ${var.env} Bastion"
   vpc_id      = var.vpc_id

@@ -29,7 +29,7 @@ locals {
 
 
 
-resource "aws_launch_configuration" "Group27_Project_webserver" {
+resource "aws_launch_configuration" "Group9_Project_webserver" {
   security_groups             =  var.security_group_id
   key_name                    =  var.key_name
   image_id                    =  var.ami_id
@@ -57,5 +57,5 @@ resource "aws_launch_configuration" "Group27_Project_webserver" {
     create_before_destroy = true
   }
   
-  name_prefix = "${local.name_prefix}-Amazon-VM-"
+  name_prefix = "${local.name_prefix}-LC-Amazon-VM-"
 }

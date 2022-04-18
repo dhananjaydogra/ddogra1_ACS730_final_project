@@ -11,7 +11,7 @@ locals {
 ### Module to Create a AWS Load Balancer and a target group
 
 # Target Group 
-resource "aws_lb_target_group" "Group27_Project_tg" {
+resource "aws_lb_target_group" "Group9_Project_tg" {
   name        = "${local.name_prefix}-TargetGroup"
   port        = 80
   target_type = "instance"
