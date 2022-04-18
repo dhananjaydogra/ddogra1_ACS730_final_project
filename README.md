@@ -27,6 +27,7 @@ Readme  Steps  to implement :
 
 
 2)  Now clone the git  repository in your local environment from Prod
+    
     git clone https://github.com/dhananjaydogra/ddogra1_ACS730_final_project.git
 
     Once done create 3 ssh key pairs 
