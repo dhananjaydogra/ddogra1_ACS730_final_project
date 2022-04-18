@@ -153,7 +153,12 @@ resource "aws_instance" "bastion" {
   subnet_id                   = module.vpc-Dev.public_subnet_ids[0]
   security_groups             = module.SecurityGroup-Bastion-Dev.BS_SG_id
   associate_public_ip_address = true
-
+  ebs_optimized               = true
+  monitoring                  = true
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
   root_block_device {
     encrypted = true
   }

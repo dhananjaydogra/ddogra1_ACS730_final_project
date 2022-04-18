@@ -16,6 +16,7 @@ resource "aws_security_group" "Group27_Project_LB_SG" {
   # Inbound Rules
   # HTTP access from specific cidrs
   ingress {
+    description = "HTTP access from specific cidrs"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -25,6 +26,7 @@ resource "aws_security_group" "Group27_Project_LB_SG" {
   # Outbound Rules
   # Internet access to specific cidrs
   egress {
+    description = "Internet access to specific cidrs"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -47,6 +49,7 @@ resource "aws_security_group" "Group27_Project_EC2_SG" {
   # Inbound Rules
   # HTTP access from specific cidrs
   ingress {
+    description = "HTTP access from specific cidrs"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -54,6 +57,7 @@ resource "aws_security_group" "Group27_Project_EC2_SG" {
   }
   # SSH access from specific cidrs
   ingress {
+    description = "SSH access from specific cidrs"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -62,6 +66,7 @@ resource "aws_security_group" "Group27_Project_EC2_SG" {
   # Outbound Rules
   # Internet access to specific cidrs
   egress {
+    description = "Internet access to specific cidrs"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -84,6 +89,7 @@ resource "aws_security_group" "Group27_Project_Bastion_SG" {
   # Inbound Rules
   # SSH access from specific cidrs
   ingress {
+    description = "SSH access from specific cidrs"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -93,6 +99,7 @@ resource "aws_security_group" "Group27_Project_Bastion_SG" {
   # Outbound Rules
   # Internet access to specific cidrs
   egress {
+    description = "Internet access to specific cidrs"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
