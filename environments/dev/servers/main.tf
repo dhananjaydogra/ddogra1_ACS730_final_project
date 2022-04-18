@@ -48,12 +48,25 @@ module "SecurityGroup-LB-Dev" {
   default_tags = local.default_tags
 }
 
+# Using Module to create a TargetGroup
+
+module "TargetGroup-Dev" {
+  source       = "../../../modules/target_group"
+  env          = var.env
+  vpc_id       = local.vpc_id
+  prefix       = local.prefix
+  default_tags = local.default_tags
+}
+
+
+
 #### Module of  LoadBalancer
 module "LB-Dev" {
   source            = "../../../modules/load_balancer"
   env               = var.env
   public_subnet_ids = local.public_subnet_ids
   security_group_id = module.SecurityGroup-LB-Dev.LB_SG_id
+  target_Grp_Arn    = module.TargetGroup-Dev.TG_ARN
   prefix            = local.prefix
   default_tags      = local.default_tags
 }
@@ -120,9 +133,9 @@ module "ASG-Dev" {
   min_size             = lookup(var.min_size, var.env)
   desired_capacity     = lookup(var.desired_capacity, var.env)
   max_size             = lookup(var.max_size, var.env)
-  Lb_ids               = [module.LB-Dev.LB_id]
   private_subnet_ids   = local.private_subnet_ids
   LC_namne             = module.LaunchConfig-Dev.LC_Name
+  target_group_arn     = module.TargetGroup-Dev.TG_ARN
   scale_down_threshold = 5
   scale_up_threshold   = 10
   prefix               = local.prefix
@@ -132,7 +145,7 @@ module "ASG-Dev" {
 
 
 
-# Creating a bastion host that provides access to all VMs in prod and nonprod
+####Creating a bastion host that provides access to private vm of this environment
 
 # Security Group for bastion
 module "SecurityGroup-Bastion-Dev" {
@@ -175,3 +188,4 @@ resource "aws_instance" "bastion" {
     }
   )
 }
+

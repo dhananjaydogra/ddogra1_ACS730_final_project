@@ -25,6 +25,13 @@ variable "security_group_id" {
   description = "Security Group ID"
 }
 
+# Get the Target Group ARN for the Load Balancer
+variable "target_Grp_Arn" {
+  type        = string
+  description = "Target Group ARN for the Load Balancer"
+}
+
+
 
 
 # Variable to signal the current environment 

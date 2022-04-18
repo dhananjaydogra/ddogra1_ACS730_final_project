@@ -28,9 +28,8 @@ resource "aws_autoscaling_group" "Group27_Project_ASG" {
   min_size         =  var.min_size
   desired_capacity =  var.desired_capacity
   max_size         =  var.max_size
-  health_check_type    = "ELB"
-  load_balancers       = var.Lb_ids
-  #target_group_arns = ["${aws_lb_target_group.tg.arn}"]
+  health_check_type  = "ELB"
+  target_group_arns  =   [var.target_group_arn ]
   launch_configuration = var.LC_namne
   enabled_metrics = [
     "GroupMinSize",

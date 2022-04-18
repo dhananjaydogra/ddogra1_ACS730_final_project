@@ -27,11 +27,10 @@ variable "max_size" {
   description = "Maximum Size for the auto scaling group"
 }
 
-# LoadBalancer IDs  required by the ASG
-variable "Lb_ids" {
-  default     = []
-  type        = list(string)
-  description = "LoadBalancer IDs"
+# Target Group ARN for the ASG
+variable "target_group_arn" {
+  type        = string
+  description = "Target Group ARN for the ASG"
 }
 
 # Private subnet IDs  required by the ASG
@@ -63,7 +62,6 @@ variable "scale_up_threshold" {
   type        = string
   description = "scale_up threshold for the ASG policy"
 }
-
 
 
 
