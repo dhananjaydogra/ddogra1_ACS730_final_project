@@ -1,6 +1,6 @@
 # VPC CIDR range
 variable "vpc_cidr" {
-  default     = "10.200.0.0/16"
+  default     = "10.250.0.0/16"
   type        = string
   description = "VPC to host the environment"
 }
