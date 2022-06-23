@@ -34,16 +34,6 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
-  checkov-job:
-    runs-on: ubuntu-latest
-    name: checkov-action
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@master
-
-      - name: Run Checkov action
-        id: checkov
-        uses: bridgecrewio/checkov-action@v12.1347.0
       
   terrascan-job:
     runs-on: ubuntu-latest
